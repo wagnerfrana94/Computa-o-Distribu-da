@@ -1,7 +1,6 @@
 from bottle import run, get, post, view, redirect, request 
 import requests, bottle, json, threading, time, sys
 
-lock = threading.Lock()
 
 messages = []
 peers = sys.argv[2:]
@@ -35,24 +34,16 @@ def index():
 	return json.dumps(messages)
 
 def clientePeers():
-	global lock
 	time.sleep(5)
 	while True:
 		time.sleep(1)
 		np = []
 		for p in peers:
-			try:
-				r = requests.get(p + '/peers')
-				np.append(p)
-				np.extend(json.loads(r.text))
-			except requests.exceptions.ConnectionError:
-				pass
-
-			time.sleep(1)
-		with lock:
-			peers[:] = list(set(np))
-
+			r = requests.get(p + '/peers')
+			np = np + json.loads(r.text)
+		peers[:] = list(set(np + peers))
 		print(peers)
+		time.sleep(2)
 
 
 def clienteMessages():
@@ -68,21 +59,7 @@ def clienteMessages():
 	
 		time.sleep(2)
 
-
-def fault_detector():
-    global lock
-    time.sleep(5)
-    while True:
-        time.sleep(1)
-        np = set()
-        for p in peers:
-            try:
-                r = requests.get(p + '/peers')
-                np.add(p)
-            except requests.exceptions.ConnectionError:
-                pass
-        with lock:
-            peers[:] = list(np)		
+	
 
 t1 = threading.Thread(target=clientePeers)
 t1.start()
@@ -90,7 +67,6 @@ t1.start()
 t2 = threading.Thread(target=clienteMessages)
 t2.start()
 
-t3 = threading.Thread(target=fault_detector)
-t3.start()
+
 
 run(host='localhost', port=int(sys.argv[1]))
