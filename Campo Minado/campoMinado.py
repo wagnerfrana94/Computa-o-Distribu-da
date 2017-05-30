@@ -1,4 +1,4 @@
-from random import*
+from random import *
 from bottle import run, get, post, view, redirect, request 
 import requests, bottle, json, threading, time, sys
 
@@ -7,6 +7,8 @@ tabuleiroView = []
 
 peers = sys.argv[2:]
 porta = int(sys.argv[1])
+
+seed(5)
 
 print(peers)
 
@@ -89,7 +91,6 @@ def atualizaTabuleiroView():
     x = int(request.forms.get('x'))-1
     y = int(request.forms.get('y'))-1
 
-    print (x,y)
     if (tabuleiro[x][y] < 10 and tabuleiro[x][y] != 0):
     	tabuleiroView[x][y] = tabuleiro[x][y]
     if (tabuleiro[x][y] >= 10):
@@ -164,9 +165,18 @@ def clienteMessages():
 			m=requests.get(p + '/campo')
 			valor = json.loads(m.text)
 			print(valor)
-			#tabuleiroView=valor
+			#print(tabuleiroView)
+			prencheTabuleiro(valor)
 			
 		time.sleep(2)
+
+def prencheTabuleiro(valor):
+	i=0
+	j=0
+	for i in range (len(tabuleiroView)):
+		for j in range (len(valor)):
+			if tabuleiroView[i][j] != valor[i][j] and (valor[i][j]!='-' and tabuleiroView[i][j] =='-'):
+				tabuleiroView[i][j] = valor[i][j]		
 
 	
 
