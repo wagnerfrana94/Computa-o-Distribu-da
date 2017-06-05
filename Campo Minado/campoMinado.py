@@ -1,12 +1,18 @@
 from random import *
 from bottle import run, get, post, view, redirect, request 
 import requests, bottle, json, threading, time, sys
+from frozendict import frozendict
 
 tabuleiro = []
 tabuleiroView = []
 
 peers = sys.argv[2:]
 porta = int(sys.argv[1])
+pontos = 0
+estado="jogando"
+meuHash = {}
+
+caminho_porta ="http://localhost:" + str(porta) 
 
 seed(5)
 
@@ -78,26 +84,32 @@ def criaCampoMinado():
 @get('/tabuleiro')
 @view('campo_minado')
 def retornaTabuleiroview():
-	return {'tabuleiroView': tabuleiroView}
+	return {'tabuleiroView': tabuleiroView, 'pontos': pontos, 'hash': meuHash}
 
 @get('/perdeu')
 @view('perdeu')
 def retornaTabuleiroview():
-	return {'tabuleiroView': tabuleiroView, 'porta': porta}
+	return {'tabuleiroView': tabuleiroView, 'porta': porta, 'pontos': pontos, 'hash': meuHash}
 
 
 @post('/jogada')
 def atualizaTabuleiroView():
+    global pontos
+    global estado
+    
     x = int(request.forms.get('x'))-1
     y = int(request.forms.get('y'))-1
 
     if (tabuleiro[x][y] < 10 and tabuleiro[x][y] != 0):
     	tabuleiroView[x][y] = tabuleiro[x][y]
+    	pontos = pontos + tabuleiro[x][y]
     if (tabuleiro[x][y] >= 10):
     	for i in range(len(tabuleiro)):
     		for j in range(len(tabuleiro)):
     			if tabuleiro[i][j] >= 10:
     				tabuleiroView[i][j] = '*'
+    	
+    	estado="morto"			
     	redirect('/perdeu')
 
     if (tabuleiro[x][y] == 0):
@@ -106,7 +118,9 @@ def atualizaTabuleiroView():
     #print(tabuleiroView)	
     redirect('/tabuleiro')
 
+
 def verificaVizinho(x,y):
+
 	if tabuleiro[x][y] == 0:
 		tabuleiroView[x][y] = 0
 		tabuleiro[x][y] = -1
@@ -143,6 +157,14 @@ def index():
 def index():
 	return json.dumps(tabuleiroView)
 
+@get('/pontos')
+def index():
+	return json.dumps(pontos)
+
+@get('/estado')
+def index():
+	return json.dumps(estado)		
+
 def clientePeers():
 	time.sleep(5)
 	while True:
@@ -157,17 +179,27 @@ def clientePeers():
 
 
 def clienteMessages():
-	time.sleep(5)
+	time.sleep(7)
+	
+
 	while True:
+		 
 		nm = []
 		for p in peers:
 			print("entrouuuuuuuuuuu")
-			m=requests.get(p + '/campo')
+			m = requests.get(p + '/campo')
+			pon = requests.get(p + '/pontos')
+			e = requests.get(p + '/estado')
+
+			e = json.loads(e.text)
 			valor = json.loads(m.text)
+			ponts = json.loads(pon.text)
+
 			print(valor)
-			#print(tabuleiroView)
-			prencheTabuleiro(valor)
 			
+			prencheTabuleiro(valor)
+			atualizaPontos(ponts, p, e)
+
 		time.sleep(2)
 
 def prencheTabuleiro(valor):
@@ -175,11 +207,18 @@ def prencheTabuleiro(valor):
 	j=0
 	for i in range (len(tabuleiroView)):
 		for j in range (len(valor)):
-			if tabuleiroView[i][j] != valor[i][j] and (valor[i][j]!='-' and tabuleiroView[i][j] =='-'):
+			if tabuleiroView[i][j] != valor[i][j] and (valor[i][j]!='-' and tabuleiroView[i][j] =='-') and valor[i][j]!='*':
 				tabuleiroView[i][j] = valor[i][j]		
 
 	
-
+def atualizaPontos(pt, p, e):
+	global meuHash
+	st = str(pt)
+	st = st + "  | " + "  Estado : " + e 
+	meuHash[p] = st 
+	#meuHash.add((p, pt))
+		
+			
 t1 = threading.Thread(target=clientePeers)
 t1.start()
 

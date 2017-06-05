@@ -27,6 +27,23 @@
 			color: red;
 			font-size: 20px;
 		}
+
+		strong{
+			float: right;
+			margin-right: 5px;
+		}
+
+		.table2{
+		    position: fixed;
+		    top: 5px;
+		    text-align: center;
+		    padding: 20px;
+		    border: solid 1px black;
+		    width: 30%;
+		    left: 5px;
+		    color: darkslateblue;
+			
+		}
 	</style>
 
 	<script>
@@ -108,20 +125,20 @@
 
 		<div class="container">
  				
- 		<div class="panel panel-primary col-sm-offset-1 col-sm-10">
+ 		<div class="panel panel-primary col-sm-offset-4 col-sm-8">
  			<div class="panel-heading pnHead">
-				<h3>Campo Minado</h3>
+				<h3>Campo Minado  <strong class="text-right">Pontos : {{pontos}}</strong></h3>
 				  	
 			</div >
-			<table class="table">
+			<table class="table" id="table">
 				<thead><tr><th></th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead>
 				<tbody>
 					%i=0
 					%cont=0
-					%for (i) in range (10):
+					%for (i) in range (len(tabuleiroView)):
 						<tr><th>{{i+1}}</th>
 							%j=0
-							%for (j) in range (10):
+							%for (j) in range (len(tabuleiroView)):
     							
     								%if tabuleiroView[i][j] == "*":
     									<td id="perdeuJogo">&#10037;</td>
@@ -139,10 +156,25 @@
 						
 				</tbody>
 			</table>
+	
+			
+		
 		</div>
+
+		<div class="col-sm-3">
+			<table class="table table2">
+				<thead><tr><th>Jogador</th><th>Pontos/Estado</th></tr></thead>
+				<tbody>			
+					%for key in hash:
+						<tr><td>{{key}}</td><td>{{hash[key]}}</td></tr>	
+						
+					%end
+				</tbody>
+			</table>		
+		</div>			
 		</div>		
 
-		<div class="container col-sm-6 col-sm-offset-3 divJogada" id="formJogada">
+		<div class="container col-sm-6 col-sm-offset-4 divJogada" id="formJogada">
 			<h4 class="text-primary">Informe a posição xy da Jogada.</h4>
 			<form class="form-horizontal" action="/jogada" method=POST>
 				<div class="form-group">
@@ -160,5 +192,13 @@
 		</div>	
 	</div>	
 </body>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    //$(document).ready(function(){	
+    var auto_refresh = setInterval(function (){ $("#table").load("/tabuleiro #table");}, 1000);
+    var auto_refresh2 = setInterval(function (){ $(".table2").load("/tabuleiro .table2");}, 1000);
+    //)};  
+</script>
 
 </html>
