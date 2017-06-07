@@ -196,8 +196,8 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script type="text/javascript">
     //$(document).ready(function(){	
-    var auto_refresh = setInterval(function (){ $("#table").load("/tabuleiro #table");}, 1000);
-    var auto_refresh2 = setInterval(function (){ $(".table2").load("/tabuleiro .table2");}, 1000);
+    var auto_refresh = setInterval(function (){ $("#table").load("/tabuleiro #table");}, 100);
+    var auto_refresh2 = setInterval(function (){ $(".table2").load("/tabuleiro .table2");}, 100);
     //)};  
 </script>
 
