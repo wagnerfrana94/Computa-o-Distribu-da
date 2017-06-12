@@ -44,9 +44,49 @@
 		    color: darkslateblue;
 			
 		}
+		td, th { text-align: center }
+		
 	</style>
 
 	<script>
+
+		$(document).ready(function(){
+
+			$("#formJogada").hide();
+
+		});
+	
+		function jogada(jog) {
+			
+			var linha, col;
+			
+			linha = jog.parentElement.parentElement.rowIndex;
+			col = jog.parentElement.cellIndex;
+			
+			$("#linha").val(linha);
+			$("#coluna").val(col);
+			
+			$("#btnJogada").trigger("click");
+			
+			$.ajax({
+				url: "/jogada", type: "POST", data: { "x": linha, "y": col },
+				success: function (resp) {
+					var a = resp;
+				},
+				error: function (ex, err) {
+					alert(ex + "\n" + err);
+				} 
+			});
+
+			return;
+			
+		}
+
+		function block(){
+			$("#table").attr("disabled", "disabled");
+
+			alert("sdsdsd");
+		}
 	
 		(function(window) { 
 		  'use strict'; 
@@ -127,10 +167,10 @@
  				
  		<div class="panel panel-primary col-sm-offset-4 col-sm-8">
  			<div class="panel-heading pnHead">
-				<h3>Campo Minado  <strong class="text-right">Pontos : {{pontos}}</strong></h3>
+				<h3>Campo Minado  <strong class="text-right" id="pontos">Pontos : {{pontos}}</strong></h3>
 				  	
 			</div >
-			<table class="table" id="table">
+			<table class="table" id="table" disabled="">
 				<thead><tr><th></th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead>
 				<tbody>
 					%i=0
@@ -141,10 +181,14 @@
 							%for (j) in range (len(tabuleiroView)):
     							
     								%if tabuleiroView[i][j] == "*":
-    									<td id="perdeuJogo">&#10037;</td>
     									%cont=1
-    								%else : 
-    									<td>{{tabuleiroView[i][j]}}</td>	
+    									<td id="perdeuJogo">&#10037;</td>
+    									
+    								%else :
+    									%if tabuleiroView[i][j] == -1 :
+    										%tabuleiroView[i][j]=0
+    									%end
+    									<td><button class="btn" onclick="jogada(this)">{{tabuleiroView[i][j]}}</button></td>	
 
 									%end
 									
@@ -156,7 +200,7 @@
 						
 				</tbody>
 			</table>
-	
+					
 			
 		
 		</div>
@@ -167,14 +211,13 @@
 				<tbody>			
 					%for key in hash:
 						<tr><td>{{key}}</td><td>{{hash[key]}}</td></tr>	
-						
 					%end
 				</tbody>
 			</table>		
 		</div>			
 		</div>		
 
-		<div class="container col-sm-6 col-sm-offset-4 divJogada" id="formJogada">
+	<div class="container col-sm-6 col-sm-offset-4 divJogada" id="formJogada">
 			<h4 class="text-primary">Informe a posição xy da Jogada.</h4>
 			<form class="form-horizontal" action="/jogada" method=POST>
 				<div class="form-group">
@@ -186,19 +229,18 @@
 					<input class="col-sm-8" id="coluna" name="y" type="number" required max="10" min="1"/>
 				</div>
 				<div class="form-group">
-					<input class="col-sm-4 col-sm-offset-4 btn btn-sm btn-success" value="Enviar" type="submit" />
+					<input class="col-sm-4 col-sm-offset-4 btn btn-sm btn-success" value="Enviar" type="submit" id="btnJogada" />
 				</div>
 			</form>
-		</div>	
+		</div> 	
 	</div>	
 </body>
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script type="text/javascript">
-    //$(document).ready(function(){	
-    var auto_refresh = setInterval(function (){ $("#table").load("/tabuleiro #table");}, 100);
-    var auto_refresh2 = setInterval(function (){ $(".table2").load("/tabuleiro .table2");}, 100);
-    //)};  
+    	var auto_refresh = setInterval(function (){ $("#table").load("/tabuleiro #table");}, 500);
+		var auto_refresh3 = setInterval(function (){ $("#pontos").load("/tabuleiro #pontos");}, 100);
+		var auto_refresh2 = setInterval(function (){ $(".table2").load("/tabuleiro .table2");}, 100);
 </script>
 
 </html>

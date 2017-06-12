@@ -200,7 +200,7 @@
   <script type="text/javascript">
  
     
-    var auto_refresh2 = setInterval(function (){ $(".table2").load("/tabuleiro .table2");}, 1000);
+    var auto_refresh2 = setInterval(function (){ $(".table2").load("/perdeu .table2");}, 50);
   </script>
 
 </html>

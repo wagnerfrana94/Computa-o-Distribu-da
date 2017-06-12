@@ -133,7 +133,7 @@ def testeMenor(m1, m2):
 
 @get('/perdeu')
 @view('perdeu')
-def retornaTabuleiroview():
+def retornaTabuleiroviewPerdeu():
     return {'tabuleiroView': tabuleiroView, 'porta': porta, 'pontos': pontos, 'hash': meuHash}
 
 
@@ -153,17 +153,19 @@ def atualizaTabuleiroView():
         m = (x, y, frozendict(vc.vClock))
         if(tabuleiro[x][y]) < 10 : 
             jogadas.add(m)
-            if(tabuleiroView[x][y] != tabuleiro[x][y]):pontos = pontos + tabuleiro[x][y]
-        else : 
+            if((tabuleiroView[x][y] != tabuleiro[x][y]) and (tabuleiro[x][y]!=-1)) :pontos = pontos + tabuleiro[x][y]
+            redirect('/tabuleiro')
+        else :
             estouraBombas()      
 
-    redirect('/tabuleiro')
+    
 
 
 def estouraBombas():
     global tabuleiroView
     global tabuleiro
     global estado
+
 
     for i in range(len(tabuleiro)):
         for j in range(len(tabuleiro)):
@@ -182,14 +184,7 @@ def testaJogadas(x,y):
     
     if (tabuleiro[x][y] < 10 and tabuleiro[x][y] != 0):
         tabuleiroView[x][y] = tabuleiro[x][y]
-    elif (tabuleiro[x][y] >= 10):
-        for i in range(len(tabuleiro)):
-            for j in range(len(tabuleiro)):
-                if tabuleiro[i][j] >= 10:
-                    tabuleiroView[i][j] = '*'
-        
-        estado="morto"
-        redirect('/perdeu')
+    
 
     elif (tabuleiro[x][y] == 0):
         verificaVizinho(x,y)
