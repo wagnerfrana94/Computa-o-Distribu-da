@@ -188,8 +188,11 @@
     									%if tabuleiroView[i][j] == -1 :
     										%tabuleiroView[i][j]=0
     									%end
-    									<td><button class="btn" onclick="jogada(this)">{{tabuleiroView[i][j]}}</button></td>	
-
+    									%if estado == "jogando":
+    										<td><button class="btn" onclick="jogada(this)">{{tabuleiroView[i][j]}}</button></td>	
+    									%else:
+    										<td>{{tabuleiroView[i][j]}}</td>
+    									%end				
 									%end
 									
 							%end

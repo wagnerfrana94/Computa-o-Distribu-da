@@ -102,11 +102,14 @@ def criaCampoMinado():
 def retornaTabuleiroview():
     global todasJogadas
     global tabuleiroView
+    global retornaEstado
+    global estado
+
     todasJogadas = list(jogadas)
     ordenacaoJogadas()
     atualizaJogadas(todasJogadas)
 
-    return {'tabuleiroView': tabuleiroView, 'pontos': pontos, 'hash': meuHash}
+    return {'tabuleiroView': tabuleiroView, 'pontos': pontos, 'hash': meuHash, 'estado': estado}
 
 
 def ordenacaoJogadas():
