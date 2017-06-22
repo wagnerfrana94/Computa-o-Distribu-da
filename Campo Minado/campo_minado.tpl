@@ -68,15 +68,7 @@
 			
 			$("#btnJogada").trigger("click");
 			
-			$.ajax({
-				url: "/jogada", type: "POST", data: { "x": linha, "y": col },
-				success: function (resp) {
-					var a = resp;
-				},
-				error: function (ex, err) {
-					alert(ex + "\n" + err);
-				} 
-			});
+			
 
 			return;
 			
